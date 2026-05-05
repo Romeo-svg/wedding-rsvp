@@ -4,17 +4,23 @@ from flask_cors import CORS
 import smtplib
 from email.message import EmailMessage
 
+# This tells Flask to look in the current folder for everything[cite: 4]
 app = Flask(__name__, static_folder='.', template_folder='.')
 CORS(app) 
 
 # --- CONFIGURATION ---
 EMAIL_USER = "roneymwangi24@gmail.com"
-# SECURE: Pulls the 16-letter App Password from Render's Environment tab
 EMAIL_PASS = os.environ.get('WEDDING_APP_PASS') 
 
+# 1. This serves the main page
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
+
+# 2. This serves your CSS, JS, and Images so the site looks good[cite: 1, 2]
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory('.', path)
 
 @app.route('/submit-rsvp', methods=['POST'])
 def rsvp():
@@ -23,10 +29,9 @@ def rsvp():
         guest_name = data.get('name')
         guest_email = data.get('email')
 
-        # Email Logic
         msg = EmailMessage()
         msg['Subject'] = f'💍 RSVP: {guest_name}'
-        msg['From'] = f"Wedding Planner <{EMAIL_USER}>" # Makes it look professional
+        msg['From'] = f"Wedding Planner <{EMAIL_USER}>"
         msg['To'] = EMAIL_USER 
         msg.set_content(f"New Confirmation!\n\nName: {guest_name}\nEmail: {guest_email}")
 
@@ -36,10 +41,8 @@ def rsvp():
 
         return jsonify({"status": "success", "message": f"Confirmed! See you there, {guest_name}."}), 200
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"status": "error", "message": "Server error. Check App Password."}), 500
+        return jsonify({"status": "error", "message": "Server error."}), 500
 
 if __name__ == "__main__":
-    # Standard Render port logic
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
