@@ -4,13 +4,13 @@ from email.message import EmailMessage
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS 
 
-# 1. Initialize the app to look in the current folder for all files
+# 1. Initialize the app to serve all files from the current folder
 app = Flask(__name__, static_folder='.', template_folder='.')
 CORS(app) 
 
 # --- CONFIGURATION ---
 EMAIL_USER = "roneymwangi24@gmail.com"
-# Pulls your 16-letter App Password safely from Render's Environment tab[cite: 4]
+# Pulls your 16-letter App Password from Render's Environment tab[cite: 4]
 EMAIL_PASS = os.environ.get('WEDDING_APP_PASS') 
 
 # 2. ROUTE: Serves the main RSVP page[cite: 5]
@@ -18,7 +18,7 @@ EMAIL_PASS = os.environ.get('WEDDING_APP_PASS')
 def index():
     return send_from_directory('.', 'index.html')
 
-# 3. ROUTE: Serves CSS, JS, and Images so the site looks beautiful[cite: 1, 2]
+# 3. ROUTE: Serves CSS, JS, and Images for the wedding theme[cite: 1, 2]
 @app.route('/<path:path>')
 def send_static(path):
     return send_from_directory('.', path)
@@ -41,8 +41,9 @@ def rsvp():
         msg['To'] = EMAIL_USER 
         msg.set_content(f"New Confirmation!\n\nName: {guest_name}\nEmail: {guest_email}")
 
-        # Connect to Gmail with a 10-second timeout to prevent Render crashes[cite: 4]
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
+        # Connect using Port 587 and TLS for better network compatibility[cite: 4]
+        with smtplib.SMTP('smtp.gmail.com', 587, timeout=15) as smtp:
+            smtp.starttls() # Secure the connection[cite: 4]
             smtp.login(EMAIL_USER, EMAIL_PASS)
             smtp.send_message(msg)
 
@@ -50,9 +51,9 @@ def rsvp():
 
     except smtplib.SMTPAuthenticationError:
         print("Error: Invalid Gmail App Password.")
-        return jsonify({"status": "error", "message": "Server authentication failed."}), 500
+        return jsonify({"status": "error", "message": "Authentication failed. Check App Password."}), 500
     except Exception as e:
-        print(f"Server Error: {e}")
+        print(f"Server Error Details: {e}")
         return jsonify({"status": "error", "message": "Server error. Please try again."}), 500
 
 if __name__ == "__main__":
