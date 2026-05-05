@@ -8,7 +8,7 @@ document.getElementById('rsvpForm').addEventListener('submit', function(event) {
     status.innerText = "Sending your RSVP...";
 
     // Pointing to your LIVE Render URL instead of localhost[cite: 2]
-    fetch('https://your-wedding-app.onrender.com/submit-rsvp', {
+    fetch('https://wedding-rsvp-tmj8.onrender.com/submit-rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
