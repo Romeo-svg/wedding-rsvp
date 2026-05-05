@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation | RSVP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="icon-container">
+        <img src="Groom.png" alt="Wedding Icon">
+    </div>
+
+    <h1>Your sit is well preserved</h1>
+    
+    <form id="rsvpForm">
+        <div class="form-group">
+            <input 
+                type="text" 
+                id="guestName"
+                placeholder="Enter your full name" 
+                required
+            >
+            <input 
+                type="email" 
+                id="guestEmail"
+                placeholder="Enter your email for verification" 
+                required
+            >
+            <button type="submit">I'LL ATTEND 😊</button>
+        </div>
+    </form>
+    <div id="statusMessage"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
